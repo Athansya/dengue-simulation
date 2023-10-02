@@ -12,5 +12,6 @@ License: MIT License
 Description: 
 '''
 
+from .agent import Agent
 from .human import Human
 from .mosquito import Mosquito
