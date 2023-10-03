@@ -12,33 +12,48 @@ License: MIT License
 Description: Mosquito class from dengueSim.
 """
 from .agent import Agent
+from dataclasses import dataclass
 from icecream import ic
 import numpy as np
 import pygame
 import random
 
 
+@dataclass
 class Mosquito(Agent):
-    def __init__(self, position, velocity, state):
-        super().__init__(position, velocity, state)
+    # Bite radius
+    bite_radius: float = 1
+    # Probability of infection
+    transmission_probability: float = 0.3
+    # Susceptible birth rate
+    upsilon: float = 36.5
+    # Infection rate per host
+    var_theta: float = 73
+    # Magnitude of sinusoidal fluctuations
+    eta: float = 0  # or 0.35
+    # Ratio of likelihood of transmission from hosts with
+    # secondary and hosts primary infection to vectors
+    var_phi: float = 0  # or 12
+    # Phase
+    phi: float = 0
 
-    def draw(
-        self,
-        screen: pygame.Surface,
-        color: str,
-        radius: int|float
-    ) -> None:
-        pygame_vector = pygame.Vector2(self.position[0], self.position[1])
-        pygame.draw.circle(screen, color, pygame_vector, radius)
+    # TODO VECTORIZE CODE IN THE FUTURE, PROBABLY BY ADDING A POPULATION CLASS OR SOME
+    # WAY OF STORING EVERY CHARACTERISTIC AS A NUMPY ARRAY
+    def _bite_human(self, human: Agent) -> None:
+        # Check if mosquito is close to human
+        if self.state == 1 and np.linalg.norm(self.position - human.position) < self.bite_radius:
+            human.state = 1 if random.random() <= self.transmission_probability else 0
 
-    def apply_rules(self) -> None:
-        pass
+
+    def apply_rules(self, human_population: list[Agent]) -> None:
+        for human in human_population:
+            self._bite_human(human)
 
     def check_neighbors(self, neighbors: list[Agent]) -> None:
         pass
 
-    def _handle_borders(self) -> None:
-        pass
+    def _randomize_velocity(self) -> None:
+        self.velocity = np.array([random.uniform(-50, 50), random.uniform(-50, 50)])
 
 
 def main():
@@ -62,7 +77,7 @@ def main():
 
     # Modifies object
     print("Updated mosquito position")
-    mosquito.move()
+    mosquito.move(max_height=500, max_width=500)
     ic(mosquito)
 
     print("Updated state and velocity")

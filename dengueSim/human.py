@@ -12,19 +12,25 @@ License: MIT License
 Description: Human class from dengueSim.
 """
 from .agent import Agent
+from dataclasses import dataclass
 from icecream import ic
 import numpy as np
 import pygame
 import random
 
 
+@dataclass
 class Human(Agent):
-    def __init__(self, position, velocity, state):
-        super().__init__(position, velocity, state)
-
-    def draw(self, screen: pygame.Surface, color: str, radius: int | float) -> None:
-        pygame_vector = pygame.Vector2(self.position[0], self.position[1])
-        pygame.draw.circle(screen, color, pygame_vector, radius)
+    # Infected rate per infected vector
+    B_i: float = 0
+    # Infection rate per infected host
+    Beta_i: float = 0
+    # Susceptible birth rate
+    mu: float = 1/65
+    # Recovery rate
+    gamma: float = 365/7 
+    # Temporary cross-immunity rate
+    alpha: float = 2
 
     def apply_rules(self) -> None:
         pass
@@ -32,8 +38,8 @@ class Human(Agent):
     def check_neighbors(self, neighbors: list[Agent]) -> None:
         pass
 
-    def _handle_borders(self) -> None:
-        pass
+    def _randomize_velocity(self) -> None:
+        self.velocity = np.array([random.uniform(-10, 10), random.uniform(-10, 10)])
 
 
 def main():

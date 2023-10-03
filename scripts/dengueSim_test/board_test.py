@@ -19,10 +19,15 @@ import random
 
 WIDTH = 500
 HEIGHT = 500
-FPS = 10
+FPS = 60
 
-MOSQUITO_RADIUS = 3
-HUMAN_RADIUS = 10
+MOSQUITO_RADIUS = 1
+HUMAN_RADIUS = 5
+
+# Host population
+N = 100
+# Vector population
+M = 1000
 
 
 def main():
@@ -38,21 +43,21 @@ def main():
     mosquito_population = [
         Mosquito(
             position=np.array([random.uniform(0, WIDTH), random.uniform(0, HEIGHT)]),
-            velocity=np.array([random.uniform(-10, 10), random.uniform(-10, 1)]),
+            velocity=np.array([random.uniform(-50, 50), random.uniform(-50, 50)]),
             state=random.choice(
                 list(states.values())[:-1]
             ),  # Picks random state, except recovered
         )
-        for _ in range(10)
+        for _ in range(M)
     ]
 
     human_population = [
         Human(
             position=np.array([random.uniform(0, WIDTH), random.uniform(0, HEIGHT)]),
-            velocity=np.array([random.uniform(-1, 1), random.uniform(-1, 1)]),
+            velocity=np.array([random.uniform(-10, 10), random.uniform(-10, 10)]),
             state=states["susceptible"],
         )
-        for _ in range(10)
+        for _ in range(N)
     ]
 
     # Creates pygame window
@@ -63,7 +68,7 @@ def main():
     dt = 0  # Time step
 
     while running:
-        screen.fill((0, 0, 0))
+        screen.fill((255, 255, 255))
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
@@ -79,7 +84,8 @@ def main():
                 radius=MOSQUITO_RADIUS
             )
             # Move
-            mosquito.move()
+            mosquito.move(max_width=WIDTH, max_height=HEIGHT, random=True)
+            mosquito.apply_rules(human_population)
 
         for human in human_population:
             human.draw(
@@ -88,7 +94,7 @@ def main():
                 radius=HUMAN_RADIUS
             )
             # Move
-            human.move()
+            human.move(max_width=WIDTH, max_height=HEIGHT, random=True)
 
 
         pygame.display.flip()
