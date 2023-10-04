@@ -15,3 +15,4 @@ Description:
 from .agent import Agent
 from .human import Human
 from .mosquito import Mosquito
+from .population import MosquitoPopulation, HumanPopulation

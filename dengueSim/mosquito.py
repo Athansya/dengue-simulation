@@ -25,6 +25,7 @@ class Mosquito(Agent):
     bite_radius: float = 1
     # Probability of infection
     transmission_probability: float = 0.3
+    
     # Susceptible birth rate
     upsilon: float = 36.5
     # Infection rate per host
@@ -38,16 +39,33 @@ class Mosquito(Agent):
     phi: float = 0
 
     # TODO VECTORIZE CODE IN THE FUTURE, PROBABLY BY ADDING A POPULATION CLASS OR SOME
-    # WAY OF STORING EVERY CHARACTERISTIC AS A NUMPY ARRAY
+    # WAY OF STORING EVERY CHARACTERISTIC AS A NUMPY ARRAY. DONT FORGET TO ADD
+    # SETTERS AND GETTERS FOR MAKING CHANGES TO THE NUMPY ARRAYS. 
     def _bite_human(self, human: Agent) -> None:
         # Check if mosquito is close to human
         if self.state == 1 and np.linalg.norm(self.position - human.position) < self.bite_radius:
             human.state = 1 if random.random() <= self.transmission_probability else 0
 
-
+    def _bite_human_vect(self, human_population: list[Agent]) -> None:
+        human_positions = np.array([human.position for human in human_population])
+        # Calculate the Euclidean distance between the mosquito and all humans
+        distances = np.linalg.norm(self.position - human_positions, axis=1)
+        # Check if the mosquito is close to any human
+        close_to_human = distances < self.bite_radius
+        # Get the indices of the close humans
+        close_human_indices = np.where(close_to_human)[0]
+        # If there are close humans, update their state
+        if close_human_indices.size > 0:
+            # Infection probability
+            infection_probabilities = np.random.random(size=close_human_indices.shape[0])
+            # Update the state of the close humans based on the infection probability
+            for i, index in enumerate(close_human_indices):
+                human_population[index].state = 1 if infection_probabilities[i] <= self.transmission_probability else 0
+        
     def apply_rules(self, human_population: list[Agent]) -> None:
-        for human in human_population:
-            self._bite_human(human)
+        self._bite_human_vect(human_population)
+        # for human in human_population:
+            # self._bite_human(human)
 
     def check_neighbors(self, neighbors: list[Agent]) -> None:
         pass

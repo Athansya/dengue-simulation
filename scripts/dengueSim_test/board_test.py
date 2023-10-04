@@ -44,9 +44,7 @@ def main():
         Mosquito(
             position=np.array([random.uniform(0, WIDTH), random.uniform(0, HEIGHT)]),
             velocity=np.array([random.uniform(-50, 50), random.uniform(-50, 50)]),
-            state=random.choice(
-                list(states.values())[:-1]
-            ),  # Picks random state, except recovered
+            state=random.choice(list(states.values())[:-1])  # Picks random not recovered state
         )
         for _ in range(M)
     ]

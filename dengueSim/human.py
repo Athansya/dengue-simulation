@@ -15,7 +15,6 @@ from .agent import Agent
 from dataclasses import dataclass
 from icecream import ic
 import numpy as np
-import pygame
 import random
 
 
