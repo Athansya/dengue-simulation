@@ -13,6 +13,7 @@ Description:
 '''
 
 from dengueSim import HumanPopulation, MosquitoPopulation
+from icecream import ic
 import pygame
 
 WIDTH = 500
@@ -21,11 +22,10 @@ FPS = 60
 
 MOSQUITO_RADIUS = 1
 HUMAN_RADIUS = 5
-
 # Host population
-N = 1000
+N = 100
 # Vector population
-M = 10000
+M = 1000
 
 
 def main():
@@ -60,6 +60,9 @@ def main():
     clock = pygame.time.Clock()
     running = True
 
+    # Time to move or not
+    timer_to_move = 0
+
     while running:
         screen.fill((255, 255, 255))
         # poll for events
@@ -70,15 +73,23 @@ def main():
 
         # Mosquito population
         mosquitoes.draw(screen, MOSQUITO_RADIUS)
-        mosquitoes.move()
+        # Move mosquitos every certain time
+        if timer_to_move % 10 == 0:
+            mosquitoes.move(random=True)
         mosquitoes.bite_humans(humans)
 
         # Human population
         humans.draw(screen, HUMAN_RADIUS)
-        humans.move()
+        if timer_to_move % 10 == 0:
+            humans.move(random=True)
+        else:
+            humans.move()
+        humans.recover()
+        humans.make_susceptible()
 
         pygame.display.flip()
         clock.tick(FPS)
+        timer_to_move += 1
 
 
 if __name__ == "__main__":
