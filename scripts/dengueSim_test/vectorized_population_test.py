@@ -16,7 +16,7 @@ from dengueSim import HumanPopulation, MosquitoPopulation
 from icecream import ic
 import pygame
 
-WIDTH = 500
+WIDTH = 500 
 HEIGHT = 500
 FPS = 60
 
